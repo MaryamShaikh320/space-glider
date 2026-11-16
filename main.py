@@ -3,10 +3,12 @@ import random
 
 import pygame
 
+from bullet import Bullet
 from coin import Coin
 from obstacle import Obstacle
 from player import Player
 from road import Road
+import math
 
 pygame.init()
 
@@ -34,10 +36,12 @@ coin_count = 0
 COIN_SPAWN_INTERVAL = 500
 coin_last_spawn_time = 0
 
+bullets = []
+
 game_over = False
 
 def reset_game():
-    global player, road, obstacles, coins, coin_count, game_over
+    global player, road, obstacles, coins, coin_count, bullets, game_over
     global obstacle_last_spawn_time, coin_last_spawn_time
     
     player = Player()
@@ -45,6 +49,7 @@ def reset_game():
     obstacles = []
     coins = []
     coin_count = 0
+    bullets = []
     game_over = False
     obstacle_last_spawn_time = pygame.time.get_ticks()
     coin_last_spawn_time = pygame.time.get_ticks()
@@ -76,7 +81,12 @@ while running:
                 if event.key == pygame.K_LEFT:
                     player.move_left()
                 elif event.key == pygame.K_RIGHT:
-                    player.move_right()
+                    player.move_right() 
+                elif event.key == pygame.K_SPACE:
+                    muzzle_x, muzzle_y = player.rect.midtop
+                    print(muzzle_y, (muzzle_y - 150) / 650)
+                    progress = math.sqrt((muzzle_y - 150) / 650)
+                    bullets.append(Bullet(player.current_lane, road, progress, muzzle_x))
 
     if not game_over:
         current_time = pygame.time.get_ticks()
@@ -110,6 +120,11 @@ while running:
             if coin.is_at_player(PLAYER_Y) and coin.lane == player.current_lane:
                     coin_count += 1
                     coins.remove(coin)
+        for bullet in bullets[:]:
+            bullet.update()
+
+            if bullet.progress <= 0:
+                bullets.remove(bullet)
 
     # screen.fill("black")
     screen.blit(bg, (0, 0))
@@ -119,6 +134,9 @@ while running:
 
     for coin in coins:
         coin.draw(screen)
+
+    for bullet in bullets:
+        bullet.draw(screen)
 
     player.draw(screen)
 

@@ -17,6 +17,7 @@ class Player:
                 (60, 120)
             ]
         )
+        
         pygame.draw.polygon(
             self.gunner_surface, 
             "#6e6e6e", 
