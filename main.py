@@ -1,3 +1,4 @@
+import math
 import os
 import random
 
@@ -8,7 +9,6 @@ from coin import Coin
 from obstacle import Obstacle
 from player import Player
 from road import Road
-import math
 
 pygame.init()
 
@@ -16,7 +16,7 @@ SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 800
 PLAYER_Y = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Psedo 3D Game")
+pygame.display.set_caption("Space Glider")
 
 bg_path = os.path.join("assets", "space-background.webp")
 bg = pygame.image.load(bg_path).convert()
@@ -28,11 +28,11 @@ player = Player()
 road = Road()
 
 obstacles = []
-OBSTACLE_SPAWN_INTERVAL = 800
+OBSTACLE_SPAWN_INTERVAL = 700
 obstacle_last_spawn_time = 0
 
 coins = []
-coin_count = 0
+score = 0
 COIN_SPAWN_INTERVAL = 500
 coin_last_spawn_time = 0
 
@@ -42,14 +42,14 @@ bullets = []
 game_over = False
 
 def reset_game():
-    global player, road, obstacles, coins, coin_count, bullets, game_over
+    global player, road, obstacles, coins, score, bullets, game_over
     global obstacle_last_spawn_time, coin_last_spawn_time
     
     player = Player()
     road = Road()
     obstacles = []
     coins = []
-    coin_count = 0
+    score = 0
     bullets = []
     game_over = False
     obstacle_last_spawn_time = pygame.time.get_ticks()
@@ -64,6 +64,11 @@ def spawn_obstacles():
 
 def spawn_coins():
     lane = random.randint(0, 2)
+
+    for obstacle in obstacles:
+        if obstacle.lane == lane and abs(obstacle.progress) < 0.15:
+            return
+
     coins.append(Coin(lane, road))
 
 
@@ -106,8 +111,12 @@ while running:
         for obstacle in obstacles[:]:
             obstacle.update()
 
+            if obstacle.health <= 0:
+                score += 1
+
             if obstacle.progress >= 1 or obstacle.health <= 0:
                 obstacles.remove(obstacle)
+
             elif obstacle.is_at_player(PLAYER_Y) and obstacle.lane == player.current_lane:
                 game_over = True
 
@@ -119,7 +128,7 @@ while running:
                 continue
 
             if coin.is_at_player(PLAYER_Y) and coin.lane == player.current_lane:
-                    coin_count += 1
+                    score += 0.5
                     coins.remove(coin)
         for bullet in bullets[:]:
             bullet.update()
@@ -147,7 +156,7 @@ while running:
 
     player.draw(screen)
 
-    coin_text = font.render(f"Score: {coin_count}", True, "#CED4DA")
+    coin_text = font.render(f"Score: {score}", True, "#CED4DA")
     screen.blit(coin_text, (20, 30))
     
     if game_over:
@@ -158,7 +167,7 @@ while running:
         game_over_text = font.render("GAME OVER", True, (255, 80, 80))
         restart_text = font.render("Press Space to Restart", True, (255, 255, 255))
         final_score_text = font.render(
-            f"Coins Collected: {coin_count}",
+            f"Coins Collected: {score}",
             True,
             (255, 190, 40)
         )

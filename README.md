@@ -1,7 +1,9 @@
-# Endless Runner
+# Space Glider
 *This game is still under development
 
-A simple endless runner game built with Pygame where you collect coins to increase your score.
+A simple endless runner game built with Pygame where you collect coins and destroy meteors to increase your score.
+
+<img src="assets/readme-image.png" alt="image of my game" width="300">
 
 ## How To Play
 
@@ -14,20 +16,33 @@ You do not need Python or Pygame installed on your computer to play this game. S
 
 ## Controls
 
-**Arrow Keys** - Move your character
+- **Right/Left Arrow Keys** - Move the gunner.
+- **Space** - Shoot.
 
-## Running from Source (For Developers)
+Coins count as half a point towards your score.
+Meteors count as one full point.
 
-If you want to view or modify the source code instead of using the executable:
+## Running From Source (For Developers)
+
+If you want to view the source code instead of using the executable:
 
 1. Clone this repository:
    ```bash
    git clone https://github.com/MaryamShaikh320/endless-runner
    ```
-2. Install the required dependencies:
+2. Create a virtual enviroment
    ```bash
-   pip install pygame
+   python -m venv .venv
    ```
-3. Run the main script:
+3. Activate the virtual enviroment:
+   ```bash
+   source .venv\Scripts\activate
+   ```
+4. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Run the game:
    ```bash
    python main.py
+   ```
