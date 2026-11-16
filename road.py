@@ -1,6 +1,9 @@
 import pygame
 
-
+# my code is really cooked because I dont really need this class anymore
+# seeing as I dont have a visual road anymore (v2+), but i do use this in my obstacles class
+# and it would be a pain to remove all that logic
+# so i'll leave this class here, purely for the logic
 class Road:
     def __init__(self):
         self.road_points = [

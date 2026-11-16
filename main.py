@@ -1,18 +1,24 @@
-import pygame  # noqa: I001
+import os
+import random
+
+import pygame
+
+from coin import Coin
+from obstacle import Obstacle
 from player import Player
 from road import Road
-from obstacle import Obstacle
-from coin import Coin
-import random
 
 pygame.init()
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 800
-GROUND_Y = 600
+PLAYER_Y = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
 pygame.display.set_caption("Psedo 3D Game")
+
+bg_path = os.path.join("assets", "space-background.webp")
+bg = pygame.image.load(bg_path).convert()
+bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 clock = pygame.time.Clock()
 
@@ -29,7 +35,6 @@ COIN_SPAWN_INTERVAL = 500
 coin_last_spawn_time = 0
 
 game_over = False
-
 
 def reset_game():
     global player, road, obstacles, coins, coin_count, game_over
@@ -82,9 +87,9 @@ while running:
             spawn_coins()
             coin_last_spawn_time = current_time
 
-        keys = pygame.key.get_pressed()
-        player.jump(keys)
-        player.update(GROUND_Y)
+        # keys = pygame.key.get_pressed()
+        # player.jump(keys)
+        player.update()
         road.update()
 
         for obstacle in obstacles[:]:
@@ -92,11 +97,8 @@ while running:
 
             if obstacle.progress >= 1:
                 obstacles.remove(obstacle)
-            elif obstacle.is_at_player(GROUND_Y) and obstacle.lane == player.current_lane:
-                required_jump_height = GROUND_Y - obstacle.get_rect().top
-
-                if player.jump_height <= required_jump_height:
-                    game_over = True
+            elif obstacle.is_at_player(PLAYER_Y) and obstacle.lane == player.current_lane:
+                game_over = True
 
         for coin in coins[:]:
             coin.update()
@@ -105,15 +107,12 @@ while running:
                 coins.remove(coin)
                 continue
 
-            if coin.is_at_player(GROUND_Y) and coin.lane == player.current_lane and player.jump_height < 40:
+            if coin.is_at_player(PLAYER_Y) and coin.lane == player.current_lane:
                     coin_count += 1
                     coins.remove(coin)
 
-    screen.fill((40, 44, 52))
-
-    road.draw_road(screen)
-    road.draw_left_divider(screen)
-    road.draw_right_divider(screen)
+    # screen.fill("black")
+    screen.blit(bg, (0, 0))
 
     for obstacle in obstacles:
         obstacle.draw(screen)
@@ -123,9 +122,9 @@ while running:
 
     player.draw(screen)
 
-    coin_text = font.render(f"Score: {coin_count}", True, (255, 190, 40))
+    coin_text = font.render(f"Score: {coin_count}", True, "#CED4DA")
     screen.blit(coin_text, (20, 30))
-
+    
     if game_over:
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180))
@@ -138,7 +137,7 @@ while running:
             True,
             (255, 190, 40)
         )
-
+        
         screen.blit(
             game_over_text,
             game_over_text.get_rect(center=(SCREEN_WIDTH // 2, 350))
