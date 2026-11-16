@@ -18,10 +18,6 @@ PLAYER_Y = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Space Glider")
 
-bg_path = os.path.join("assets", "space-background.webp")
-bg = pygame.image.load(bg_path).convert()
-bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
 clock = pygame.time.Clock()
 
 player = Player()
@@ -142,8 +138,7 @@ while running:
             if bullet in bullets and bullet.progress <= 0.4:
                 bullets.remove(bullet)
 
-    # screen.fill("black")
-    screen.blit(bg, (0, 0))
+    screen.fill("black")
 
     for obstacle in obstacles:
         obstacle.draw(screen)
