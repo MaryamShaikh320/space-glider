@@ -8,6 +8,7 @@ class Obstacle:
         self.lane = lane
         self.progress = 0
         self.road = road
+        self.health = 3
 
     def update(self):
         self.progress = self.progress + 0.005
@@ -39,8 +40,13 @@ class Obstacle:
         return (x, y)
 
     def get_rect(self):
-        width = 10 + self.progress * 80
-        height = 5 + self.progress * 80
+        perspective_width = 10 + self.progress * 80
+        perspective_height = 5 + self.progress * 80
+
+        health_scale = self.health / 3
+
+        width = perspective_width * health_scale
+        height = perspective_height * health_scale
 
         x, y = self.get_position()
 
@@ -49,8 +55,17 @@ class Obstacle:
 
         return pygame.Rect(rect_x, rect_y, width, height)
 
+    def get_color(self):
+        if self.health == 3:
+            return "#394654"
+        elif self.health == 2:
+            return "#4b5439"
+        elif self.health == 1:
+            return "#4d3a38"
+        return "#000000"
+
     def draw(self, screen):
-        pygame.draw.rect(screen, (222, 44, 44), self.get_rect())
+        pygame.draw.rect(screen, self.get_color(), self.get_rect(), 0, 10)
 
     def is_at_player(self, player_y):
         player_progress = ((player_y - 150) / 650) ** 0.5

@@ -28,13 +28,14 @@ player = Player()
 road = Road()
 
 obstacles = []
-OBSTACLE_SPAWN_INTERVAL = 1000
+OBSTACLE_SPAWN_INTERVAL = 800
 obstacle_last_spawn_time = 0
 
 coins = []
 coin_count = 0
 COIN_SPAWN_INTERVAL = 500
 coin_last_spawn_time = 0
+
 
 bullets = []
 
@@ -105,7 +106,7 @@ while running:
         for obstacle in obstacles[:]:
             obstacle.update()
 
-            if obstacle.progress >= 1:
+            if obstacle.progress >= 1 or obstacle.health <= 0:
                 obstacles.remove(obstacle)
             elif obstacle.is_at_player(PLAYER_Y) and obstacle.lane == player.current_lane:
                 game_over = True
@@ -123,7 +124,13 @@ while running:
         for bullet in bullets[:]:
             bullet.update()
 
-            if bullet.progress <= 0:
+            for obstacle in obstacles[:]:
+                if bullet.lane == obstacle.lane and bullet.get_rect().colliderect(obstacle.get_rect()):
+                    obstacle.health -= 1
+                    bullets.remove(bullet)
+                    break
+
+            if bullet in bullets and bullet.progress <= 0.4:
                 bullets.remove(bullet)
 
     # screen.fill("black")
