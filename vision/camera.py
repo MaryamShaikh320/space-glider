@@ -1,4 +1,5 @@
 import cv2
+from movement import Movement
 from tracking import PoseTracker
 
 cap = cv2.VideoCapture(0)
@@ -9,6 +10,7 @@ if not cap.isOpened():
     exit()  # noqa: PLR1722
 
 poseTracker = PoseTracker()
+movement = Movement()
 
 while True:
     ret, frame = cap.read()
@@ -17,11 +19,18 @@ while True:
         print("Error: Cannot recieve frame")
         break
 
-    tracking_frame, torso_center_x = poseTracker.process_frame(frame)
+    frame = cv2.flip(frame, 1)
 
-    mirrored_tracking_frame = cv2.flip(tracking_frame, 1)
+    tracking_frame, torso_x, torso_y = poseTracker.process_frame(frame, frame.shape[:2])
 
-    cv2.imshow(window_name, mirrored_tracking_frame)
+    if torso_x is not None and torso_y is not None:
+        # print("torso x: ", torso_x)
+        # print("torso y: ", torso_y)
+
+        movement.update(tracking_frame, torso_x, torso_y)
+        movement.draw_torso_circle()
+
+    cv2.imshow(window_name, tracking_frame)
 
     cv2.waitKey(1)
     if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
