@@ -9,17 +9,14 @@ from coin import Coin
 from obstacle import Obstacle
 from player import Player
 from road import Road
-from vision.camera import get_camera_lane
-from vision.movement import Movement
-from vision.tracking import PoseTracker
+from vision.camera_worker import CameraWorker
 
 pygame.init()
 
 
 # camera initialization
 
-pose_tracker = PoseTracker()
-movement = Movement()
+camera_worker = CameraWorker()
 
 
 SCREEN_WIDTH = 600
@@ -82,17 +79,7 @@ def spawn_coins():
 font = pygame.font.Font(None, 36)
 running = True
 try:
-    cap = cv2.VideoCapture(0)
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    # cap.set(cv2.CAP_PROP_FPS, 30)
-
-    window_name = "Webcam Feed"
-
-    if not cap.isOpened():
-        print("Error: Could not open webcam")
-        exit()  # noqa: PLR1722
-
+    camera_worker.start()
 
     while running:
         for event in pygame.event.get():
@@ -114,8 +101,7 @@ try:
                         progress = math.sqrt((muzzle_y - 150) / 650)
                         bullets.append(Bullet(player.current_lane, road, progress, muzzle_x))
 
-        lane, camera_frame = get_camera_lane(cap, pose_tracker, movement)
-
+        lane = camera_worker.get_lane()
         # if camera_frame is not None:
         #     cv2.imshow(window_name, camera_frame)
         #     cv2.waitKey(1)
@@ -222,6 +208,5 @@ try:
         clock.tick(60)
 
 finally:
-    cap.release()
-    cv2.destroyAllWindows()
+    camera_worker.stop()
     pygame.quit()
