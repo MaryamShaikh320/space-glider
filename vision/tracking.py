@@ -28,6 +28,8 @@ class PoseTracker:
         self.pose_landmarker = self.PoseLandmarker.create_from_options(self.poseOptions)
 
     def process_frame(self, frame, frame_dimensions):
+        norm_x = None
+        norm_y = None
         torso_center_x = None
         torso_center_y = None
 
@@ -48,11 +50,11 @@ class PoseTracker:
                 connections=vision.PoseLandmarksConnections.POSE_LANDMARKS,
             )
 
-            torso_center_x, torso_center_y = self.get_torso_center(landmarks, frame_dimensions)
+            norm_x, norm_y, torso_center_x, torso_center_y = self.get_torso_center(landmarks, frame_dimensions)
 
         new_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR)
 
-        return new_frame, torso_center_x, torso_center_y
+        return new_frame, norm_x, norm_y, torso_center_x, torso_center_y
 
     def get_torso_center(self, landmarks, frame_dimensions):
         # 11->left shoulder 12->right shoulder 23->left hip 24->right hip
@@ -69,7 +71,7 @@ class PoseTracker:
             norm_y = (
                 landmarks[11].y + landmarks[12].y + landmarks[23].y + landmarks[24].y
             ) / 4
-
-            return (norm_x * width), (norm_y * height)
+            
+            return norm_x, norm_y, (norm_x * width), (norm_y * height)
 
         return None, None
