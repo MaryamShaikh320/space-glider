@@ -13,6 +13,7 @@ class CameraWorker:
         self._lock = threading.Lock()
 
         self._latest_lane = 1
+        self._latest_frame = None
 
         self._thread = threading.Thread(
             target=self._run,
@@ -26,6 +27,12 @@ class CameraWorker:
         with self._lock:
             return self._latest_lane
 
+    def get_frame(self):
+        with self._lock:
+            if self._latest_frame is None:
+                return None
+            return self._latest_frame.copy()
+    
     def stop(self):
         self._stop_event.set()
         self._thread.join()
@@ -38,9 +45,7 @@ class CameraWorker:
         # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         # cap.set(cv2.CAP_PROP_FPS, 30)
-    
-        window_name = "Webcam Feed"
-    
+        
         if not cap.isOpened():
             print("Error: Could not open webcam")
             cap.release()
@@ -48,6 +53,7 @@ class CameraWorker:
 
         pose_tracker = PoseTracker()
         movement = Movement()
+        
 
         try:
             while not self._stop_event.is_set():
@@ -55,12 +61,12 @@ class CameraWorker:
                     cap, pose_tracker, movement
                 )
 
-                if camera_frame is None:
-                    continue
-
-                if lane is not None:
-                    with self._lock:
+                with self._lock:
+                    if lane is not None:
                         self._latest_lane = lane
+
+                    if camera_frame is not None:
+                        self._latest_frame = camera_frame
 
         finally:
             cap.release()

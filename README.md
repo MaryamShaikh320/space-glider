@@ -1,7 +1,7 @@
 # Space Glider
 *This game is still under development
 
-A simple endless runner game built with Pygame where you collect coins and destroy meteors to increase your score.
+A simple endless runner game built with Pygame where you collect coins and destroy meteors to increase your score with camera integration using MediaPipe.
 
 <img src="assets/readme-image.png" alt="image of my game" width="300">
 
@@ -14,10 +14,18 @@ You do not need Python or Pygame installed on your computer to play this game. S
 3. Under the **Assets** dropdown at the bottom of the release notes, click on **'main.exe'** to download it.
 4. Double-click the downloaded file to launch the game instantly!
 
+Note: Both the Pygame and OpenCV window will open.
+
 ## Controls
 
+**To change modes, press q.**
+
+In keyboard mode:
 - **Right/Left Arrow Keys** - Move the gunner.
 - **Space** - Shoot.
+
+In camera mode:
+- **Move right/left physically to move the gunner on screen**
 
 Coins count as half a point towards your score.
 Meteors count as one full point.

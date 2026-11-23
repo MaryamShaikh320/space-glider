@@ -44,11 +44,11 @@ class PoseTracker:
         if detection_result.pose_landmarks:
             landmarks = detection_result.pose_landmarks[0]
 
-            # drawing_utils.draw_landmarks(
-            #     image=rgb_frame,
-            #     landmark_list=landmarks,
-            #     connections=vision.PoseLandmarksConnections.POSE_LANDMARKS,
-            # )
+            drawing_utils.draw_landmarks(
+                image=rgb_frame,
+                landmark_list=landmarks,
+                connections=vision.PoseLandmarksConnections.POSE_LANDMARKS,
+            )
 
             norm_x, norm_y, torso_center_x, torso_center_y = self.get_torso_center(landmarks, frame_dimensions)
 

@@ -24,6 +24,8 @@ SCREEN_HEIGHT = 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Space Glider")
 
+window_name = "Webcam Feed"
+
 clock = pygame.time.Clock()
 
 road = Road()
@@ -40,10 +42,10 @@ score = 0
 COIN_SPAWN_INTERVAL = 500
 coin_last_spawn_time = 0
 
-
 bullets = []
 
 game_over = False
+camera_mode = True
 
 def reset_game():
     global road, player, obstacles, coins, score, bullets, game_over
@@ -75,11 +77,11 @@ def spawn_coins():
 
     coins.append(Coin(lane, road))
 
-
 font = pygame.font.Font(None, 36)
 running = True
 try:
     camera_worker.start()
+
 
     while running:
         for event in pygame.event.get():
@@ -87,10 +89,13 @@ try:
                 running = False
 
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    camera_mode = not camera_mode
+                    print("Camera Mode" if camera_mode else "Keyboard Mode")
                 if game_over:
                     if event.key == pygame.K_SPACE:
                         reset_game()
-                else:
+                elif not camera_mode:
                     if event.key == pygame.K_LEFT:
                         player.move_left()
                     elif event.key == pygame.K_RIGHT:
@@ -102,16 +107,17 @@ try:
                         bullets.append(Bullet(player.current_lane, road, progress, muzzle_x))
 
         lane = camera_worker.get_lane()
-        # if camera_frame is not None:
-        #     cv2.imshow(window_name, camera_frame)
-        #     cv2.waitKey(1)
+        camera_frame = camera_worker.get_frame()
 
-        #     if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
-        #         running = False
+        if camera_frame is not None:
+            cv2.imshow(window_name, camera_frame)
+            cv2.waitKey(1)
+            if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+                running = False
 
 
         if not game_over:
-            if lane is not None:
+            if camera_mode and lane is not None:
                 player.set_lane(lane)
             current_time = pygame.time.get_ticks()
             if (current_time - obstacle_last_spawn_time) >= OBSTACLE_SPAWN_INTERVAL:
@@ -175,6 +181,12 @@ try:
 
         coin_text = font.render(f"Score: {score}", True, "#CED4DA")
         screen.blit(coin_text, (20, 30))
+        mode_text = font.render(
+            f"Mode: {'Camera' if camera_mode else 'Keyboard'}",
+            True,
+            "#CED4DA"
+        )
+        screen.blit(mode_text, (20, 65))
         
         if game_over:
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -209,4 +221,5 @@ try:
 
 finally:
     camera_worker.stop()
+    cv2.destroyAllWindows()
     pygame.quit()
