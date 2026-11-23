@@ -1,3 +1,4 @@
+import platform
 import threading
 
 import cv2
@@ -40,7 +41,20 @@ class CameraWorker:
     def _run(self):
         print("Camera thread started")
 
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+        os_name = platform.system()
+        os_backends = {
+            "Windows": [cv2.CAP_DSHOW, cv2.CAP_MSMF],
+            "Darwin":  [cv2.CAP_AVFOUNDATION],
+            "Linux":   [cv2.CAP_V4L2],
+        }
+
+        backends = os_backends.get(os_name, []) + [cv2.CAP_ANY]
+        for backend in backends:
+            cap = cv2.VideoCapture(0, backend)
+            if cap.isOpened():
+                break
+            
         print("camera opened: ", cap.isOpened(), flush=True)
         # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)

@@ -216,7 +216,7 @@ try:
 
         pygame.display.flip()
 
-        print("fps: ", clock.get_fps())
+        # print("fps: ", clock.get_fps())
         clock.tick(60)
 
 finally:
