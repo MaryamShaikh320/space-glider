@@ -83,6 +83,10 @@ font = pygame.font.Font(None, 36)
 running = True
 try:
     cap = cv2.VideoCapture(0)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    # cap.set(cv2.CAP_PROP_FPS, 30)
+
     window_name = "Webcam Feed"
 
     if not cap.isOpened():
@@ -112,12 +116,12 @@ try:
 
         lane, camera_frame = get_camera_lane(cap, pose_tracker, movement)
 
-        if camera_frame is not None:
-            cv2.imshow(window_name, camera_frame)
-            cv2.waitKey(1)
+        # if camera_frame is not None:
+        #     cv2.imshow(window_name, camera_frame)
+        #     cv2.waitKey(1)
 
-            if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
-                running = False
+        #     if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+        #         running = False
 
 
         if not game_over:

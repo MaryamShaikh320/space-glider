@@ -6,7 +6,7 @@ def get_camera_lane(cap, pose_tracker, movement):
 
     if not ret:
         print("Error: Cannot recieve frame")
-        return None  # noqa: RET501
+        return None, None  # noqa: RET501
 
     frame = cv2.flip(frame, 1)
 
@@ -23,11 +23,13 @@ def get_camera_lane(cap, pose_tracker, movement):
 
         movement.update(tracking_frame, norm_torso_x, norm_torso_y, torso_x, torso_y)
         movement.draw_torso_circle()
-        return movement.get_lane(), tracking_frame
 
-    cv2.rectangle(overlay, (0, 0), (int(0.33 * width), height), (204, 123, 16), -1)
-    cv2.rectangle(overlay, (int(0.33 * width), 0), (int(0.67 * width), height), (64, 125, 50), -1)
-    cv2.rectangle(overlay, (int(0.67 * width), 0), (width, height), (54, 65, 122), -1)
-    cv2.addWeighted(overlay, 0.3, tracking_frame, 1 - 0.3, 0, tracking_frame)
+        # cv2.rectangle(overlay, (0, 0), (int(0.33 * width), height), (204, 123, 16), -1)
+        # cv2.rectangle(overlay, (int(0.33 * width), 0), (int(0.67 * width), height), (64, 125, 50), -1)
+        # cv2.rectangle(overlay, (int(0.67 * width), 0), (width, height), (54, 65, 122), -1)
+        # cv2.addWeighted(overlay, 0.3, tracking_frame, 1 - 0.3, 0, tracking_frame)
+
+
+        return movement.get_lane(), tracking_frame
 
     return None, tracking_frame
