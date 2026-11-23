@@ -15,26 +15,7 @@ class Obstacle:
 
     def get_position(self):
         y = 150 + 650 * (self.progress**2)
-
-        road_left_x = self.road.interpolate_x(
-            y, self.road.road_points[0], self.road.road_points[3]
-        )
-        left_divider_x = self.road.interpolate_x(
-            y, self.road.left_divider[0], self.road.left_divider[1]
-        )
-        right_divider_x = self.road.interpolate_x(
-            y, self.road.right_divider[0], self.road.right_divider[1]
-        )
-        road_right_x = self.road.interpolate_x(
-            y, self.road.road_points[1], self.road.road_points[2]
-        )
-
-        lane_centers = [
-            (road_left_x + left_divider_x) / 2,
-            (left_divider_x + right_divider_x) / 2,
-            (right_divider_x + road_right_x) / 2,
-        ]
-
+        lane_centers = self.road.get_lane_centers(y)
         x = lane_centers[self.lane]
 
         return (x, y)

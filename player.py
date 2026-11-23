@@ -3,7 +3,8 @@ import pygame
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, road):
+        self.road = road
         self.gunner_surface = pygame.Surface((60, 120), pygame.SRCALPHA)
         pygame.draw.polygon(
             self.gunner_surface,
@@ -42,7 +43,7 @@ class Player:
 
         # Lane movement
         self.current_lane = 1
-        self.lane_positions = [105, 305, 505]
+        self.lane_positions = self.road.get_lane_centers(self.rect.centery)
 
         #glow surfaces
         self.player_glow_surface = self.create_glow(100, (41, 255, 139), 200)
@@ -69,6 +70,9 @@ class Player:
     #     if keys[pygame.K_UP] and self.on_ground:
     #         self.vertical_velocity = self.jump_velocity
     #         self.on_ground = False
+
+    def set_lane(self, lane):
+        self.current_lane = lane
 
     def draw(self, screen):
         # ship

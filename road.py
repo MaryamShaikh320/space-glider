@@ -79,3 +79,25 @@ class Road:
             x_end = self.interpolate_x(y_end, self.right_divider[0], self.right_divider[1])
 
             pygame.draw.line(screen, (255, 255, 255), (x_start, y_start), (x_end, y_end), thickness)
+
+    def get_lane_centers(self, y):
+        road_left_x = self.interpolate_x(
+            y, self.road_points[0], self.road_points[3]
+        )
+        left_divider_x = self.interpolate_x(
+            y, self.left_divider[0], self.left_divider[1]
+        )
+        right_divider_x = self.interpolate_x(
+            y, self.right_divider[0], self.right_divider[1]
+        )
+        road_right_x = self.interpolate_x(
+            y, self.road_points[1], self.road_points[2]
+        )
+
+        lane_centers = [
+            (road_left_x + left_divider_x) / 2,
+            (left_divider_x + right_divider_x) / 2,
+            (right_divider_x + road_right_x) / 2,
+        ]
+
+        return lane_centers

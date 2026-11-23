@@ -24,8 +24,7 @@ class Movement:
 
     def get_lane(self):
         x = self.norm_torso_x
-qwfmnejwfmnewjfinmfjkewfnwejfkewnjfkwenfjwienfwejmifkewfewn
-
+        
         if self.current_lane == 0:
             if x > 0.36:
                 self.current_lane = 1
